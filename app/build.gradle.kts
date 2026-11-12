@@ -1,6 +1,17 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
+val restfulApiKey: String = localProperties.getProperty("RESTFUL_API_KEY") ?: ""
 
 android {
     namespace = "com.example.konekin"
@@ -16,10 +27,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "RESTFUL_API_KEY", "\"$restfulApiKey\"")
     }
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     buildTypes {
@@ -45,8 +58,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-
     implementation("com.squareup.retrofit2:converter-gson:2.6.2")
-
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 }
